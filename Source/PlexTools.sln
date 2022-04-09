@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32328.378
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexNet", "PlexNet\PlexNet.csproj", "{2D3FA496-1C55-4864-8ED5-1417E4B2BD75}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlaylistToHearts", "PlaylistToHearts\PlaylistToHearts.csproj", "{42F0E467-0721-49E3-9BEC-2565B80F3209}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExportHearts", "ExportHearts\ExportHearts.csproj", "{3545D8CB-53B9-4F43-8233-D503088B6EC1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImportHearts", "ImportHearts\ImportHearts.csproj", "{F722939E-C602-4F35-B365-62467A9CE33B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WMPToPlex", "WmpToPlex\WMPToPlex.csproj", "{8582CE66-C7D9-4C52-8F33-41B55E444F45}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2D3FA496-1C55-4864-8ED5-1417E4B2BD75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D3FA496-1C55-4864-8ED5-1417E4B2BD75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D3FA496-1C55-4864-8ED5-1417E4B2BD75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D3FA496-1C55-4864-8ED5-1417E4B2BD75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42F0E467-0721-49E3-9BEC-2565B80F3209}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42F0E467-0721-49E3-9BEC-2565B80F3209}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42F0E467-0721-49E3-9BEC-2565B80F3209}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42F0E467-0721-49E3-9BEC-2565B80F3209}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3545D8CB-53B9-4F43-8233-D503088B6EC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3545D8CB-53B9-4F43-8233-D503088B6EC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3545D8CB-53B9-4F43-8233-D503088B6EC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3545D8CB-53B9-4F43-8233-D503088B6EC1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F722939E-C602-4F35-B365-62467A9CE33B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F722939E-C602-4F35-B365-62467A9CE33B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F722939E-C602-4F35-B365-62467A9CE33B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F722939E-C602-4F35-B365-62467A9CE33B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8582CE66-C7D9-4C52-8F33-41B55E444F45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8582CE66-C7D9-4C52-8F33-41B55E444F45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8582CE66-C7D9-4C52-8F33-41B55E444F45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8582CE66-C7D9-4C52-8F33-41B55E444F45}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F21DA1BE-6CFB-4A04-B596-12954AEFFB6C}
+	EndGlobalSection
+EndGlobal
