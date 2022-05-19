@@ -58,7 +58,11 @@ namespace ExportHearts
                 doc = await plex.GetDocumentAsync($"/playlists/{playlistId}/items");
 
                 using FileStream file = File.OpenWrite(options.FilePath);
-                using Utf8JsonWriter writer = new(file);
+                var writerOptions = new JsonWriterOptions
+                {
+                    Indented = true
+                };
+                using Utf8JsonWriter writer = new(file, options: writerOptions);
                 doc.WriteTo(writer);
 
                 Console.WriteLine($"Wrote playlist {title} to {options.FilePath}");
