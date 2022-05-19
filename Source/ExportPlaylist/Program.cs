@@ -40,28 +40,32 @@ namespace ExportHearts
                 playlist = metadata.EnumerateArray().FirstOrDefault(e => e.GetProperty("ratingKey").GetString() == playlistId);
             }
             else
-            {
+            {                
                 playlist = metadata.EnumerateArray().FirstOrDefault(e => e.GetProperty("title").GetString() == "❤️ Tracks");
-                playlistId = playlist.GetProperty("ratingKey").GetString() ?? String.Empty;
-            }
+                // We can't be sure that ❤️ Tracks exists
+                if (!playlist.ValueKind.Equals(JsonValueKind.Undefined))
+                {
+                    playlistId = playlist.GetProperty("ratingKey").GetString() ?? String.Empty;
+                    string title = playlist.GetProperty("title").GetString() ?? String.Empty;
 
-            if (String.IsNullOrEmpty(playlistId))
-            {
-                Console.WriteLine($"ERROR: unable to find playlist");
-            }
-            else
-            {
-                string title = playlist.GetProperty("title").GetString() ?? String.Empty;
+                    Console.WriteLine($"Getting playlist {title}...");
 
-                Console.WriteLine($"Getting playlist {title}...");
+                    doc = await plex.GetDocumentAsync($"/playlists/{playlistId}/items");
 
-                doc = await plex.GetDocumentAsync($"/playlists/{playlistId}/items");
+                    using FileStream file = File.OpenWrite(options.FilePath);
+                    var writerOptions = new JsonWriterOptions
+                    {
+                        Indented = true
+                    };
+                    using Utf8JsonWriter writer = new(file, options: writerOptions);
+                    doc.WriteTo(writer);
 
-                using FileStream file = File.OpenWrite(options.FilePath);
-                using Utf8JsonWriter writer = new(file);
-                doc.WriteTo(writer);
-
-                Console.WriteLine($"Wrote playlist {title} to {options.FilePath}");
+                    Console.WriteLine($"Wrote playlist {title} to {options.FilePath}");
+                }
+                else
+                {
+                    Console.WriteLine($"ERROR: unable to find playlist");
+                }
             }
         }
     }
