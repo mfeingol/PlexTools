@@ -1,12 +1,12 @@
 ﻿# What is it?
 
-This program reads the tracks in a [Plex](https://www.plex.tv) server's ❤️ Tracks playlist and exports them to a Plex playlist JSON file.
+This program reads the tracks in a [Plex](https://www.plex.tv) server's music playlist and exports them to a JSON file.
 
-Why would you need this? You have ❤️ Tracks playlist on one media server, and you want to transfer those ratings to a second media server. This is step one of two.
+Why would you need this? One example: you have ❤️ Tracks playlist on one media server, and you want to transfer those ratings to a second media server. This is step one of two.
 
 # Usage
 
-ExportHearts 1.0.0
+ExportPlaylist 1.1.0
 Copyright (C) 2022 Max Feingold
 
   -t, --token     Required. Token used to access Plex server
@@ -15,13 +15,16 @@ Copyright (C) 2022 Max Feingold
 
   -f, --file      Required. Path to file to export
 
+  -l, --playlist  Plex playlist id. Defaults to ❤️ Tracks playlist
+
   --help          Display this help screen.
 
   --version       Display version information.
   
-# Example
+# Examples
   
-ImportHearts.exe -t ABc4UE1GKMGF1T4G4ws5 -p https://10-0-0-100.854032948508f830dca34044895698437.plex.direct:32400 -f hearts.json
+ExportPlaylist.exe -t ABc4UE1GKMGF1T4G4ws5 -p https://10-0-0-100.854032948508f830dca34044895698437.plex.direct:32400 -f hearts.json
+ExportPlaylist.exe -t ABc4UE1GKMGF1T4G4ws5 -p https://10-0-0-100.854032948508f830dca34044895698437.plex.direct:32400 -f favorites.json -l 32756
 
 # Where to find input parameters
 

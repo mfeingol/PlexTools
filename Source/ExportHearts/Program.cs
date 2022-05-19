@@ -3,6 +3,7 @@
 using System.Text.Json;
 using PlexNet;
 using CommandLine;
+using System.Globalization;
 
 namespace ExportHearts
 {
@@ -29,19 +30,39 @@ namespace ExportHearts
             JsonElement mediaContainer = doc.RootElement.GetProperty("MediaContainer");
 
             JsonElement metadata = mediaContainer.GetProperty("Metadata");
-            JsonElement hearts = metadata.EnumerateArray().FirstOrDefault(e => e.GetProperty("guid").GetString() == "com.plexapp.agents.none://54d52a9b-6a93-4625-acbd-43d7cf7fe674");
-            string playlistId = hearts.GetProperty("ratingKey").GetString() ?? String.Empty;
-            string title = hearts.GetProperty("title").GetString() ?? String.Empty;
 
-            Console.WriteLine($"Getting playlist {title}...");
+            JsonElement playlist;
+            string playlistId;
 
-            doc = await plex.GetDocumentAsync($"/playlists/{playlistId}/items");
+            if (options.PlaylistId.HasValue)
+            {
+                playlistId = options.PlaylistId.Value.ToString(CultureInfo.InvariantCulture);
+                playlist = metadata.EnumerateArray().FirstOrDefault(e => e.GetProperty("ratingKey").GetString() == playlistId);
+            }
+            else
+            {
+                playlist = metadata.EnumerateArray().FirstOrDefault(e => e.GetProperty("title").GetString() == "❤️ Tracks");
+                playlistId = playlist.GetProperty("ratingKey").GetString() ?? String.Empty;
+            }
 
-            using FileStream file = File.OpenWrite(options.FilePath);
-            using Utf8JsonWriter writer = new(file);
-            doc.WriteTo(writer);
+            if (String.IsNullOrEmpty(playlistId))
+            {
+                Console.WriteLine($"ERROR: unable to find playlist");
+            }
+            else
+            {
+                string title = playlist.GetProperty("title").GetString() ?? String.Empty;
 
-            Console.WriteLine($"Wrote playlist {title} to {options.FilePath}");
+                Console.WriteLine($"Getting playlist {title}...");
+
+                doc = await plex.GetDocumentAsync($"/playlists/{playlistId}/items");
+
+                using FileStream file = File.OpenWrite(options.FilePath);
+                using Utf8JsonWriter writer = new(file);
+                doc.WriteTo(writer);
+
+                Console.WriteLine($"Wrote playlist {title} to {options.FilePath}");
+            }
         }
     }
 }
