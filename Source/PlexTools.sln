@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32328.378
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexNet", "PlexNet\PlexNet.csproj", "{2D3FA496-1C55-4864-8ED5-1417E4B2BD75}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlexNet", "PlexNet\PlexNet.csproj", "{2D3FA496-1C55-4864-8ED5-1417E4B2BD75}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlaylistToHearts", "PlaylistToHearts\PlaylistToHearts.csproj", "{42F0E467-0721-49E3-9BEC-2565B80F3209}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlaylistToRatings", "PlaylistToHearts\PlaylistToRatings.csproj", "{42F0E467-0721-49E3-9BEC-2565B80F3209}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExportHearts", "ExportHearts\ExportHearts.csproj", "{3545D8CB-53B9-4F43-8233-D503088B6EC1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExportPlaylist", "ExportHearts\ExportPlaylist.csproj", "{3545D8CB-53B9-4F43-8233-D503088B6EC1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImportHearts", "ImportHearts\ImportHearts.csproj", "{F722939E-C602-4F35-B365-62467A9CE33B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImportPlaylist", "ImportHearts\ImportPlaylist.csproj", "{F722939E-C602-4F35-B365-62467A9CE33B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WMPToPlex", "WmpToPlex\WMPToPlex.csproj", "{8582CE66-C7D9-4C52-8F33-41B55E444F45}"
 EndProject

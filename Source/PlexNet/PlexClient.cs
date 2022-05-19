@@ -20,7 +20,7 @@ namespace PlexNet
                 address += "/";
 
             this.client = new HttpClient { BaseAddress = new Uri(address) };
-            client.DefaultRequestHeaders.Add("X-Plex-Token", token);
+            this.client.DefaultRequestHeaders.Add("X-Plex-Token", token);
         }
 
         public async Task<JsonDocument> GetDocumentAsync(string path)
@@ -28,7 +28,7 @@ namespace PlexNet
             using HttpRequestMessage request = new(HttpMethod.Get, path);
             request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            using HttpResponseMessage response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+            using HttpResponseMessage response = (await this.client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead)).EnsureSuccessStatusCode();
             using Stream stream = await response.Content.ReadAsStreamAsync();
 
             return await JsonDocument.ParseAsync(stream);
@@ -36,7 +36,15 @@ namespace PlexNet
 
         public async Task RateAsync(string key, decimal value)
         {
-            (await client.PutAsync($"/:/rate?identifier=com.plexapp.plugins.library&key={key}&rating={value}", null)).EnsureSuccessStatusCode();
+            (await this.client.PutAsync($"/:/rate?identifier=com.plexapp.plugins.library&key={key}&rating={value}", null)).EnsureSuccessStatusCode();
+        }
+
+        public async Task AddToPlaylistAsync(string machineId, uint playlistId, string ratingKey)
+        {
+            string qs = $"?uri=server%3A%2F%2F{machineId}%2Fcom.plexapp.plugins.library%2Flibrary%2Fmetadata%2F{ratingKey}";
+            string path = $"/playlists/{playlistId}/items{qs}";
+
+            (await this.client.PutAsync(path, null)).EnsureSuccessStatusCode();
         }
     }
 }
