@@ -2,11 +2,11 @@
 
 This program rates as 5 stars all the specified [Plex](https://www.plex.tv) music playlist.
 
-Why would you need this? You have a playlist of favorite tracks, and you'd like to rate them instead so they show up in the ❤️ Tracks playlist.
+Why would you need this? You have a playlist of favorite tracks, and you'd like to rate them so they show up in the ❤️ Tracks playlist.
 
 # Usage
 
-PlaylistToHearts 1.0.0
+PlaylistToRatings 1.0.0
 Copyright (C) 2022 Max Feingold
 
   -t, --token       Required. Token used to access Plex server
@@ -21,7 +21,7 @@ Copyright (C) 2022 Max Feingold
   
 # Example
   
-PlaylistToHearts.exe -t ABc4UE1GKMGF1T4G4ws5 -p https://10-0-0-100.854032948508f830dca34044895698437.plex.direct:32400 -l 215486
+PlaylistToRatings.exe -t ABc4UE1GKMGF1T4G4ws5 -p https://10-0-0-100.854032948508f830dca34044895698437.plex.direct:32400 -l 215486
 
 # Where to find input parameters
 

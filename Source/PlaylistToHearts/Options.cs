@@ -14,11 +14,5 @@ namespace PlaylistToHearts
 
         [Option('l', "playlist", Required = true, HelpText = "Plex playlist id")]
         public uint PlaylistId { get; set; }
-
-        //[Option('x', "local-prefix", Required = true, HelpText = "Local file path prefix")]
-        //public string? LocalPrefix { get; set; }
-
-        //[Option('y', "server-prefix", Required = true, HelpText = "Server file path prefix")]
-        //public string? ServerPrefix { get; set; }
     }
 }
