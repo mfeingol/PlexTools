@@ -1,6 +1,7 @@
 ﻿// (c) 2022 Max Feingold
 
 using System.Net.Http.Headers;
+using System.Net.NetworkInformation;
 using System.Text.Json;
 
 namespace PlexNet
@@ -14,6 +15,8 @@ namespace PlexNet
     {
         HttpClient client;
 
+
+
         public PlexClient(string address, string token)
         {
             if (!address.EndsWith("/"))
@@ -21,6 +24,15 @@ namespace PlexNet
 
             this.client = new HttpClient { BaseAddress = new Uri(address) };
             this.client.DefaultRequestHeaders.Add("X-Plex-Token", token);
+            // Identify machine and product in the header, so PMS knows who we are
+            var XPlexClientIdentifier =
+            (
+                from nic in NetworkInterface.GetAllNetworkInterfaces()
+                where nic.OperationalStatus == OperationalStatus.Up
+                select nic.GetPhysicalAddress().ToString()
+            ).FirstOrDefault();
+            this.client.DefaultRequestHeaders.Add("X-Plex-Client-Identifier", XPlexClientIdentifier);
+            this.client.DefaultRequestHeaders.Add("X-Plex-Product", "PlexTools");
         }
 
         public async Task<JsonDocument> GetDocumentAsync(string path)
