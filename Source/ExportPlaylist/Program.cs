@@ -42,15 +42,15 @@ namespace ExportHearts
             else
             {
                 playlist = metadata.EnumerateArray().FirstOrDefault(e => e.GetProperty("title").GetString() == "❤️ Tracks");
-                playlistId = playlist.GetProperty("ratingKey").GetString() ?? String.Empty;
             }
-
-            if (String.IsNullOrEmpty(playlistId))
+            // We can't be sure that "Heart Tracks" exists
+            if (playlist.ValueKind == JsonValueKind.Undefined)
             {
                 Console.WriteLine($"ERROR: unable to find playlist");
             }
             else
             {
+                playlistId = playlist.GetProperty("ratingKey").GetString() ?? String.Empty;
                 string title = playlist.GetProperty("title").GetString() ?? String.Empty;
 
                 Console.WriteLine($"Getting playlist {title}...");
@@ -64,7 +64,6 @@ namespace ExportHearts
                 };
                 using Utf8JsonWriter writer = new(file, options: writerOptions);
                 doc.WriteTo(writer);
-
                 Console.WriteLine($"Wrote playlist {title} to {options.FilePath}");
             }
         }
