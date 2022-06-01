@@ -28,8 +28,6 @@ ImportPlaylist.exe -t ABc4UE1GKMGF1T4G4ws5 -p https://10-0-0-100.854032948508f83
 
 # Where to find input parameters
 
-Launch plex.tv in your favorite browser and bring up the F12 debugging tools.
+Follow these instructions to find your Plex token: https://support.plex.tv/articles/204059436-finding-an-authentication-token-x-plex-token/
 
-The token is the X-Plex-Token parameter used in every request. The server is the plex.direct URL used by the browser.
-
-Browse to your playlist and observe the request URL. The playlist is the parameter used in the /playlists/X/items request.
+Launch plex.tv in your favorite browser and bring up the F12 debugging tools. Browse to your playlist and observe the request URL. The playlist is the parameter used in the GET /playlists/X/items request.
