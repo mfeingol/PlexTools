@@ -1,8 +1,8 @@
 ﻿// (c) 2022 Max Feingold
 
 using System.Text.Json;
-using PlexNet;
 using CommandLine;
+using PlexNet;
 
 namespace ExportHearts
 {
@@ -39,16 +39,36 @@ namespace ExportHearts
                 Console.WriteLine($"Reading tracks from music library section {section.GetProperty("title").GetString()}...");
 
                 string key = section.GetProperty("key").GetString() ?? String.Empty;
-                doc = await plex.GetDocumentAsync($"/library/sections/{key}/all?type={(uint)MetadataType.Track}");
 
-                JsonElement trackContainer = doc.RootElement.GetProperty("MediaContainer");
-                JsonElement tracks = trackContainer.GetProperty("Metadata");
-
-                foreach (JsonElement track in tracks.EnumerateArray())
+                int totalRecvd = 0;
+                while (true)
                 {
-                    string guid = track.GetProperty("guid").GetString() ?? String.Empty;
-                    targetLookup[guid] = (track, key);
+                    const int size = 120;
+
+                    doc = await plex.GetDocumentAsync($"/library/sections/{key}/all?type={(uint)MetadataType.Track}", totalRecvd, size);
+
+                    JsonElement trackContainer = doc.RootElement.GetProperty("MediaContainer");
+                    JsonElement tracks = trackContainer.GetProperty("Metadata");
+
+                    string? title = section.GetProperty("title").GetString();
+                    int totalSize = trackContainer.GetProperty("totalSize").GetInt32();
+
+                    int recvd = trackContainer.GetProperty("size").GetInt32();
+                    totalRecvd += recvd;
+
+                    foreach (JsonElement track in tracks.EnumerateArray())
+                    {
+                        string guid = track.GetProperty("guid").GetString() ?? String.Empty;
+                        targetLookup[guid] = (track, key);
+                    }
+
+                    Console.CursorLeft = 0;
+                    Console.Write($"Read {totalRecvd} of {totalSize} tracks from music library section {title}...");
+
+                    if (recvd < size)
+                        break;
                 }
+                Console.WriteLine();
 
                 libraryLookup[key] = section;
             }
@@ -95,6 +115,8 @@ namespace ExportHearts
 
                 if (options.PlaylistId.HasValue)
                     await plex.AddToPlaylistAsync(machineId, options.PlaylistId.Value, destRatingKey);
+
+                count++;
             }
 
             Console.WriteLine($"Imported {count} track(s)");
