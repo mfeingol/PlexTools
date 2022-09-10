@@ -1,8 +1,8 @@
 ﻿// (c) 2022 Max Feingold
 
 using System.Text.Json;
-using PlexNet;
 using CommandLine;
+using PlexNet;
 
 namespace PlaylistToHearts
 {
@@ -23,37 +23,51 @@ namespace PlaylistToHearts
 
             PlexClient plex = new(options.Server, options.Token);
 
-            JsonDocument doc = await plex.GetDocumentAsync($"/playlists/{options.PlaylistId}/items");
-            JsonElement mediaContainer = doc.RootElement.GetProperty("MediaContainer");
-            JsonElement metadata = mediaContainer.GetProperty("Metadata");
+            string? playlistTitle;
+            int totalRecvd = 0;
+            int count = 0;
 
-            var enumerator = metadata.EnumerateArray();
-
-            int count = 1;
-            int total = enumerator.Count();
-
-            foreach (JsonElement track in enumerator)
+            while (true)
             {
-                string? grandparentTitle = track.GetProperty("grandparentTitle").GetString();
-                string? parentTitle = track.GetProperty("parentTitle").GetString();
-                string? title = track.GetProperty("title").GetString();
+                const int size = 120;
 
-                if (!String.IsNullOrEmpty(grandparentTitle) && !String.IsNullOrEmpty(title) && !String.IsNullOrEmpty(title))
-                    Console.WriteLine($"{count} of {total}: rating {grandparentTitle} / {parentTitle} / {title} ...");
+                JsonDocument doc = await plex.GetDocumentAsync($"/playlists/{options.PlaylistId}/items", totalRecvd, size);
 
-                string? ratingKey = track.GetProperty("ratingKey").GetString();
-                if (!String.IsNullOrEmpty(ratingKey))
+                JsonElement mediaContainer = doc.RootElement.GetProperty("MediaContainer");
+                JsonElement metadata = mediaContainer.GetProperty("Metadata");
+
+                playlistTitle = mediaContainer.GetProperty("title").GetString();
+                int totalSize = mediaContainer.GetProperty("totalSize").GetInt32();
+
+                int recvd = mediaContainer.GetProperty("size").GetInt32();
+                totalRecvd += recvd;
+
+                foreach (JsonElement track in metadata.EnumerateArray())
                 {
-                    await plex.RateAsync(ratingKey, 10);
-                    count++;
+                    string? grandparentTitle = track.GetProperty("grandparentTitle").GetString();
+                    string? parentTitle = track.GetProperty("parentTitle").GetString();
+                    string? title = track.GetProperty("title").GetString();
+
+                    if (!String.IsNullOrEmpty(grandparentTitle) && !String.IsNullOrEmpty(title) && !String.IsNullOrEmpty(title))
+                        Console.WriteLine($"Rating {count + 1} of {totalSize}: {grandparentTitle} / {parentTitle} / {title} ...");
+
+                    string? ratingKey = track.GetProperty("ratingKey").GetString();
+                    if (!String.IsNullOrEmpty(ratingKey))
+                    {
+                        await plex.RateAsync(ratingKey, 10);
+                        count++;
+                    }
+                    else
+                    {
+                        Console.Write("Ignoring {0}", title ?? track.GetProperty("guid").GetString() ?? "track");
+                    }
                 }
-                else
-                {
-                    Console.Write("Ignoring {0}", title ?? track.GetProperty("guid").GetString() ?? "track");
-                }
+
+                if (recvd < size)
+                    break;
             }
 
-            Console.WriteLine($"Rated {count} track(s) from playlist {mediaContainer.GetProperty("title").GetString()}");
+            Console.WriteLine($"Rated {count} track(s) from playlist {playlistTitle}");
         }
     }
 }
