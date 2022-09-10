@@ -1,5 +1,6 @@
 ﻿// (c) 2022 Max Feingold
 
+using System.Globalization;
 using System.Net.Http.Headers;
 using System.Net.NetworkInformation;
 using System.Text.Json;
@@ -24,21 +25,29 @@ namespace PlexNet
 
             this.client = new HttpClient { BaseAddress = new Uri(address) };
             this.client.DefaultRequestHeaders.Add("X-Plex-Token", token);
+
             // Identify client and product in the header, so PMS knows who we are
-            var XPlexClientIdentifier =
+            string? XPlexClientIdentifier =
             (
                 from nic in NetworkInterface.GetAllNetworkInterfaces()
                 where nic.OperationalStatus == OperationalStatus.Up
                 select nic.GetPhysicalAddress().ToString()
             ).FirstOrDefault();
+
             this.client.DefaultRequestHeaders.Add("X-Plex-Client-Identifier", XPlexClientIdentifier);
             this.client.DefaultRequestHeaders.Add("X-Plex-Product", "PlexTools");
         }
 
-        public async Task<JsonDocument> GetDocumentAsync(string path)
+        public async Task<JsonDocument> GetDocumentAsync(string path, int start = -1, int size = -1)
         {
             using HttpRequestMessage request = new(HttpMethod.Get, path);
             request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            if (start >= 0 && size > 0)
+            {
+                request.Headers.Add("X-Plex-Container-Start", start.ToString(CultureInfo.InvariantCulture));
+                request.Headers.Add("X-Plex-Container-Size", size.ToString(CultureInfo.InvariantCulture));
+            }
 
             using HttpResponseMessage response = (await this.client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead)).EnsureSuccessStatusCode();
             using Stream stream = await response.Content.ReadAsStreamAsync();
