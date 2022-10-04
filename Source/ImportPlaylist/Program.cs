@@ -94,7 +94,7 @@ namespace ExportHearts
 
                 if (!String.IsNullOrEmpty(grandparentTitle) && !String.IsNullOrEmpty(title) && !String.IsNullOrEmpty(title))
                 {
-                    Console.WriteLine($"{count + 1} of {total}: rating {grandparentTitle} / {parentTitle} / {title} ...");
+                    Console.WriteLine($"{count + 1} of {total}: importing {grandparentTitle} / {parentTitle} / {title}");
                 }
                 else
                 {
@@ -109,12 +109,19 @@ namespace ExportHearts
                     continue;
                 }
 
-                // Always copy rating over
-                if (sourceTrack.GetProperty("userRating").TryGetDecimal(out decimal rating))
-                    await plex.RateAsync(destRatingKey, rating);
-
                 if (options.PlaylistId.HasValue)
+                {
                     await plex.AddToPlaylistAsync(machineId, options.PlaylistId.Value, destRatingKey);
+                }
+                else if (sourceTrack.GetProperty("userRating").TryGetDecimal(out decimal rating))
+                {
+                    await plex.RateAsync(destRatingKey, rating);
+                }
+                else
+                {
+                    Console.Write("ERROR: unable to rate track {0}", title ?? sourceTrack.GetProperty("guid").GetString() ?? "track");
+                    continue;
+                }
 
                 count++;
             }
