@@ -102,7 +102,7 @@ namespace ExportHearts
                     continue;
                 }
 
-                string destRatingKey = GetDestRatingKey(sourceTrack, targetLookup, libraryLookup);
+                string destRatingKey = GetTargetRatingKey(sourceTrack, targetLookup, libraryLookup);
                 if (String.IsNullOrEmpty(destRatingKey))
                 {
                     Console.Write("ERROR: unable to get rating key for track {0}", title ?? sourceTrack.GetProperty("guid").GetString() ?? "track");
@@ -129,33 +129,49 @@ namespace ExportHearts
             Console.WriteLine($"Imported {count} track(s)");
         }
 
-        static string GetDestRatingKey(JsonElement track, Dictionary<string, (JsonElement, string)> targetLookup, Dictionary<string, JsonElement> libraryLookup)
+        static string GetTargetRatingKey(JsonElement track, Dictionary<string, (JsonElement, string)> targetLookup, Dictionary<string, JsonElement> libraryLookup)
         {
-            string ratingKey = String.Empty;
+            //
+            // Find by guid
+            //
 
             string guid = track.GetProperty("guid").GetString() ?? String.Empty;
-            if (targetLookup.TryGetValue(guid, out var targetLookupTrack))
+            if (targetLookup.TryGetValue(guid, out (JsonElement, string) targetLookupTrack))
             {
-                ratingKey = targetLookupTrack.Item1.GetProperty("ratingKey").GetString() ?? String.Empty;
+                string ratingKey = targetLookupTrack.Item1.GetProperty("ratingKey").GetString() ?? String.Empty;
                 if (!String.IsNullOrEmpty(ratingKey))
                     return ratingKey;
             }
+
+            //
+            // Find by artist/album/track title match
+            //
 
             string? grandparentTitle = track.GetProperty("grandparentTitle").GetString()?.ToLower();
             string? parentTitle = track.GetProperty("parentTitle").GetString()?.ToLower();
             string? title = track.GetProperty("title").GetString()?.ToLower();
 
-            JsonElement foundTrack = (from targetTrack in targetLookup.Values
-                                      where targetTrack.Item1.GetProperty("grandparentTitle").GetString()?.ToLower() == grandparentTitle
-                                      where targetTrack.Item1.GetProperty("parentTitle").GetString()?.ToLower() == parentTitle
-                                      where targetTrack.Item1.GetProperty("title").GetString()?.ToLower() == title
-                                      select targetTrack.Item1).FirstOrDefault();
+            JsonElement foundTrack = new();
 
-            if (foundTrack.ValueKind != JsonValueKind.Undefined)
-                ratingKey = foundTrack.GetProperty("ratingKey").GetString() ?? String.Empty;
+            foreach ((JsonElement, string) targetTrack in targetLookup.Values)
+            {
+                if ((targetTrack.Item1.TryGetProperty("grandparentTitle", out JsonElement targetGrandparentTitle) && targetGrandparentTitle.GetString()?.ToLower() == grandparentTitle) &&
+                    (targetTrack.Item1.TryGetProperty("parentTitle", out JsonElement targetParentTitle) && targetParentTitle.GetString()?.ToLower() == parentTitle) &&
+                    (targetTrack.Item1.TryGetProperty("title", out JsonElement targetTitle) && targetTitle.GetString()?.ToLower() == title))
+                {
+                    foundTrack = targetTrack.Item1;
+                    if (foundTrack.ValueKind != JsonValueKind.Undefined)
+                    {
+                        string ratingKey = foundTrack.GetProperty("ratingKey").GetString() ?? String.Empty;
+                        if (!String.IsNullOrEmpty(ratingKey))
+                            return ratingKey;
+                    }
+                }
+            }
 
-            if (!String.IsNullOrEmpty(ratingKey))
-                return ratingKey;
+            //
+            // Find by file path
+            //
 
             string? filePath = track.GetProperty("Media").EnumerateArray().FirstOrDefault().GetProperty("Part").EnumerateArray().Select(e => e.GetProperty("file").GetString()).FirstOrDefault();
             if (!String.IsNullOrEmpty(filePath))
@@ -175,7 +191,7 @@ namespace ExportHearts
                                 string relevantPath = targetFilePath.Substring(rootPath.Length);
                                 if (!String.IsNullOrEmpty(relevantPath) && filePath.EndsWith(relevantPath))
                                 {
-                                    ratingKey = targetTrack.Item1.GetProperty("ratingKey").GetString() ?? String.Empty;
+                                    string ratingKey = targetTrack.Item1.GetProperty("ratingKey").GetString() ?? String.Empty;
                                     if (!String.IsNullOrEmpty(ratingKey))
                                         return ratingKey;
                                 }
